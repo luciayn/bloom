@@ -1,2 +1,2 @@
 hello eveyone, this is our APP
-IT TS GOING TO BE AMAZING!!!
+IT IS GOING TO BE HORRIBLE!!!
