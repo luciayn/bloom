@@ -70,7 +70,7 @@
             android:id="@+id/registrarse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="registrarse" />
+            android:text="@string/register_button" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_fragment"
-        android:name="es.uc3m.android.navigation.HomeFragment"
+        android:name="es.uc3m.android.bloom.HomeFragment"
         tools:layout="@layout/home_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
