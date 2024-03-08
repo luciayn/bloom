@@ -1,9 +1,17 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    dependencies {
+        // Añade esta línea
+        classpath 'com.google.gms:google-services:4.4.1' // Asegúrate de utilizar la última versión
+    }
+}
+
+
 plugins {
     id 'com.android.application' version '8.2.1' apply false
     id 'com.android.library' version '8.2.1' apply false
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
