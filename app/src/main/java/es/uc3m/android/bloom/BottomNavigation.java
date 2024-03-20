@@ -27,9 +27,13 @@ public class BottomNavigation extends AppCompatActivity implements BottomNavigat
             fragment = new ProfileFragment();
         } else if (itemId == R.id.settings_item) {
             fragment = new SettingsFragment();
-        } else {
+        } else if (itemId == R.id.home_item) {
             fragment = new HomeFragment();
+        } else {
+            fragment = new CalendarFragment();
         }
+
+
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.nav_fragment, fragment)

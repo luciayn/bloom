@@ -148,10 +148,10 @@
 
             <EditText
                 android:id="@+id/birth_date"
-                android:layout_width="95dp"
+                android:layout_width="112dp"
                 android:layout_height="wrap_content"
-                android:hint="00/00/0000"
-                android:backgroundTint="@android:color/transparent"/>
+                android:backgroundTint="@android:color/transparent"
+                android:hint="00/00/0000" />
 
             <ImageView
                 android:id="@+id/edit_birth"
