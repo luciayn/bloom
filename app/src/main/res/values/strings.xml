@@ -11,8 +11,14 @@
     <string name="user_name">User Name</string>
     <string name="email">Email</string>
     <string name="account_already">Already have an account?</string>
-    <string name="sign_in"><u>Sign In</u></string>
+    <string name="sign_in_sub"><u>Sign Up</u></string>
+    <string name="log_in_sub"><u>Log In</u></string>
     <string name="hello">Hello!</string>
     <string name="welcome">Create your account for \n better Experience</string>
+    <string name="welcome_login">Welcome Back, you have been \n  missed for long Time</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="log_in">Log In</string>
+    <string name="sign_in">Sign Up</string>
+    <string name="bloom_cap">BLOOM</string>
 
 </resources>

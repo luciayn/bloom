@@ -18,7 +18,8 @@
             android:layout_width="136dp"
             android:layout_height="114dp"
             android:layout_gravity="center"
-            tools:srcCompat="@drawable/user" />
+            app:srcCompat="@drawable/user"
+            android:layout_marginTop="10dp"/>
 
         <TextView
             android:id="@+id/textViewHello"
@@ -34,68 +35,68 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/welcome"
-            android:textSize="15sp"
-            android:textColor="@color/hintColor"/>
+            android:textColor="@color/hintColor"
+            android:textSize="15sp" />
 
         <EditText
             android:id="@+id/editTextNombre"
             android:layout_width="304dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
             android:ems="10"
             android:hint="@string/name"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="16dp"/>
+            android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/editTextApellidos"
             android:layout_width="304dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
             android:ems="10"
             android:hint="@string/surname"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="16dp"/>
+            android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/editTextUsu"
             android:layout_width="302dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="14dp"
             android:ems="10"
             android:hint="@string/user_name"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="16dp"/>
+            android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/editTextEmail"
             android:layout_width="306dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="14dp"
             android:ems="10"
             android:hint="@string/email"
-            android:inputType="textEmailAddress"
-            android:layout_marginBottom="16dp"/>
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:id="@+id/editTextPassword"
             android:layout_width="307dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="14dp"
             android:ems="10"
             android:hint="@string/password"
-            android:inputType="textPassword"
-            android:layout_marginBottom="16dp"/>
+            android:inputType="textPassword" />
 
         <EditText
             android:id="@+id/editTextPassword2"
             android:layout_width="310dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="14dp"
             android:ems="10"
             android:hint="@string/repeat_password"
-            android:inputType="textPassword"
-            android:layout_marginBottom="16dp"/>
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/register"
@@ -103,12 +104,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:backgroundTint="@color/light_purple"
-            android:text="@string/register_button" />
+            android:text="@string/register_button"
+            android:clickable="true"
+            android:focusable="true" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
@@ -121,13 +124,13 @@
                 android:textColor="@color/textColor" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textViewLogIn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="@string/sign_in"
+                android:text="@string/log_in_sub"
                 android:textColor="@color/light_purple" />
         </LinearLayout>
 

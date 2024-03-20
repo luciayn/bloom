@@ -26,4 +26,10 @@
         <item name="android:padding">16dp</item>
         <!-- Add any other button style attributes here -->
     </style>
+
+    <style name="ShapeAppearanceOverlay.App.CircleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>
