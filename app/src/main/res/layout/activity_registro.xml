@@ -18,7 +18,8 @@
             android:layout_width="136dp"
             android:layout_height="114dp"
             android:layout_gravity="center"
-            tools:srcCompat="@drawable/user" />
+            app:srcCompat="@drawable/user"
+            android:layout_marginTop="10dp"/>
 
         <TextView
             android:id="@+id/textViewHello"
@@ -62,7 +63,7 @@
             android:layout_width="302dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="14dp"
             android:ems="10"
             android:hint="@string/user_name"
             android:inputType="textPersonName" />
@@ -72,7 +73,7 @@
             android:layout_width="306dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="14dp"
             android:ems="10"
             android:hint="@string/email"
             android:inputType="textEmailAddress" />
@@ -82,7 +83,7 @@
             android:layout_width="307dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="14dp"
             android:ems="10"
             android:hint="@string/password"
             android:inputType="textPassword" />
@@ -92,7 +93,7 @@
             android:layout_width="310dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="14dp"
             android:ems="10"
             android:hint="@string/repeat_password"
             android:inputType="textPassword" />
@@ -110,7 +111,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
@@ -129,7 +130,7 @@
                 android:layout_marginStart="8dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="@string/log_in"
+                android:text="@string/log_in_sub"
                 android:textColor="@color/light_purple" />
         </LinearLayout>
 
