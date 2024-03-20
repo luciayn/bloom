@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2024 Boni Garcia (https://bonigarcia.github.io/)
+ * (C) Copyright 2022 Boni Garcia (https://bonigarcia.github.io/)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,21 @@
  * limitations under the License.
  *
  */
-package es.uc3m.android.navigation;
+package es.uc3m.android.bloom;
 
-import org.junit.Test;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="https://developer.android.com/studio/test">Testing documentation</a>
- */
-public class UnitTest {
+import androidx.fragment.app.Fragment;
 
-    @Test
-    public void test() {
-        // TODO: Exercise
+public class ProfileFragment extends Fragment {
 
-        // TODO: Verify
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.profile_fragment, container, false);
     }
 
 }

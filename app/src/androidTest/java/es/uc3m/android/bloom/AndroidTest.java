@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2022 Boni Garcia (https://bonigarcia.github.io/)
+ * (C) Copyright 2024 Boni Garcia (https://bonigarcia.github.io/)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,25 @@
  * limitations under the License.
  *
  */
-package es.uc3m.android.navigation;
+package es.uc3m.android.bloom;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import androidx.fragment.app.Fragment;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class SettingsFragment extends Fragment {
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * @see <a href="https://developer.android.com/studio/test">Testing documentation</a>
+ */
+@RunWith(AndroidJUnit4.class)
+public class AndroidTest {
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.settings_fragment, container, false);
+    @Test
+    public void test() {
+        // TODO: Exercise
+
+        // TODO: Verify
     }
-
 }

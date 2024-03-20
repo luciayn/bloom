@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package es.uc3m.android.navigation;
+package es.uc3m.android.bloom;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
