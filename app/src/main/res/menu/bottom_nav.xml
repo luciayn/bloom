@@ -3,15 +3,19 @@
 
     <item
         android:id="@+id/home_item"
-        android:icon="@drawable/ic_baseline_home_24"
-        android:title="Home" />
+        android:icon="@drawable/plus"
+        android:title="@string/home" />
+    <item
+        android:id="@+id/notification_item"
+        android:icon="@drawable/bell"
+        android:title="@string/notification" />
+    <item
+        android:id="@+id/calendar_item"
+        android:icon="@drawable/bottom_calendar"
+        android:title="@string/calendar" />
     <item
         android:id="@+id/profile_item"
         android:icon="@drawable/ic_baseline_person_24"
-        android:title="Profile" />
-    <item
-        android:id="@+id/settings_item"
-        android:icon="@drawable/ic_baseline_settings_24"
-        android:title="Setting" />
+        android:title="@string/profile" />
 
 </menu>

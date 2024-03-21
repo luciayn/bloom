@@ -62,7 +62,7 @@
             android:layout_width="306dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:backgroundTint="@color/light_purple"
+            android:backgroundTint="@color/purple"
             android:text="@string/log_in"
             android:clickable="true"
             android:focusable="true" />
@@ -90,7 +90,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/sign_in_sub"
-                android:textColor="@color/light_purple" />
+                android:textColor="@color/purple" />
         </LinearLayout>
 
 

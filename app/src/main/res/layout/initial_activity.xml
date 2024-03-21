@@ -51,7 +51,7 @@
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:backgroundTint="@color/light_purple"
+                android:backgroundTint="@color/purple"
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/register_button" />
@@ -60,7 +60,7 @@
                 android:id="@+id/init_login"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/light_purple"
+                android:backgroundTint="@color/purple"
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/log_in" />

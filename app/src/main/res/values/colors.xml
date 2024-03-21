@@ -9,8 +9,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="textColor">#1C1F34</color>
     <color name="hintColor">#6C757D</color>
-    <color name="light_purple">#8F6FEC</color>
+    <color name="purple">#8F6FEC</color>
     <color name="input_background">#F6F7F9</color>
     <color name="input_background2">#E9ECEF</color>
-
+    <color name="light_gray">#EDE9E9</color>
+    <color name="light_purple">#87e4ccfd</color>
 </resources>

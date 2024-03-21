@@ -32,7 +32,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registro);
+        setContentView(R.layout.register_activity);
         name = findViewById(R.id.editTextNombre);
         surname = findViewById(R.id.editTextApellidos);
         user = findViewById(R.id.editTextUsu);

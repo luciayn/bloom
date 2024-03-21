@@ -20,4 +20,8 @@
     <string name="log_in">Log In</string>
     <string name="sign_in">Sign Up</string>
     <string name="bloom_cap">BLOOM</string>
+    <string name="home">Home</string>
+    <string name="notification">Notification</string>
+    <string name="calendar">Calendar</string>
+    <string name="profile">Profile</string>
 </resources>

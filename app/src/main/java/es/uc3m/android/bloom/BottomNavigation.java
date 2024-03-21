@@ -13,7 +13,7 @@ public class BottomNavigation extends AppCompatActivity implements BottomNavigat
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // Replace 'your_layout_name' with the actual layout file name
+        setContentView(R.layout.main_activity);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_view);
         bottomNavigationView.setOnItemSelectedListener(this);
     }
@@ -25,8 +25,8 @@ public class BottomNavigation extends AppCompatActivity implements BottomNavigat
         int itemId = item.getItemId();
         if (itemId == R.id.profile_item) {
             fragment = new ProfileFragment();
-        } else if (itemId == R.id.settings_item) {
-            fragment = new SettingsFragment();
+        } else if (itemId == R.id.notification_item) {
+            fragment = new NotificationsFragment();
         } else if (itemId == R.id.home_item) {
             fragment = new HomeFragment();
         } else {
