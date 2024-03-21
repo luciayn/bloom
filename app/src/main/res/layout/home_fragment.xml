@@ -9,23 +9,21 @@
 
     <TextView
         android:id="@+id/text_date"
-        android:layout_width="31dp"
-        android:layout_height="41dp"
+        android:layout_width="280dp"
+        android:layout_height="254dp"
         android:background="#8F6FEC"
         android:drawableStart="@drawable/calendar_icon"
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
+        android:scaleX="0.1"
+        android:scaleY="0.1"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.144"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.118" />
+        tools:layout_editor_absoluteX="-60dp"
+        tools:layout_editor_absoluteY="-22dp" />
 
     <TextView
         android:id="@+id/textView"
@@ -59,6 +57,13 @@
         app:layout_constraintHorizontal_bias="0.235"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_photo" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="666dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
