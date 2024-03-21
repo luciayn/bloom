@@ -1,5 +1,5 @@
 <resources>
-    <!-- Base edit text style -->
+
     <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -11,10 +11,9 @@
         <item name="android:textColor">@color/textColor</item>
         <item name="android:textColorHint">@color/hintColor</item>
         <item name="android:layout_marginTop">8dp</item>
-        <!-- You might need to adjust padding and margins as per your design -->
+
     </style>
 
-    <!-- Button style -->
     <style name="ButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -24,14 +23,12 @@
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:padding">16dp</item>
-        <!-- Add any other button style attributes here -->
     </style>
 
     <style name="ShapeAppearanceOverlay.App.CircleImageView" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
-
 
 
 </resources>

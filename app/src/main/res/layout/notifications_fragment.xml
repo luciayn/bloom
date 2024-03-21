@@ -30,7 +30,7 @@
                     android:id="@+id/notificationsTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Notifications"
+                    android:text="@string/notification"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     android:textColor="@color/purple"
                     android:textStyle="bold" />
@@ -62,7 +62,7 @@
                     android:id="@+id/textView6"
                     android:layout_width="202dp"
                     android:layout_height="35dp"
-                    android:text="A year ago today..."
+                    android:text="@string/a_year_ago_today"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textStyle="bold" />
 
@@ -70,7 +70,7 @@
                     android:id="@+id/textView7"
                     android:layout_width="202dp"
                     android:layout_height="62dp"
-                    android:text="Today we went to visit the London bridge it was so beautiful. We also saw..."
+                    android:text="@string/entry_example"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
                 </LinearLayout>
             </LinearLayout>

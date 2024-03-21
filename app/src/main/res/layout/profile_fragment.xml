@@ -47,7 +47,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="35dp"
                 android:textSize="30sp"
-                android:text="Name"
+                android:text="@string/name"
                 android:backgroundTint="@android:color/transparent"
                 />
 

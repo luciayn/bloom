@@ -24,19 +24,18 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="#8F6FEC">
+                android:background="@color/purple"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/icon_date"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginTop="4dp"
                     android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_marginBottom="4dp"
-                    android:src="@drawable/calendar_icon"
-                    />
+                    android:src="@drawable/calendar_icon" />
 
                 <TextView
                     android:id="@+id/text_date"
@@ -44,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:background="#8F6FEC"
                     android:gravity="center_vertical"
-                    android:text="Feb 13, 2024"
+                    android:text="@string/random_date"
                     android:textColor="@color/white"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -56,16 +55,16 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
-                android:text="Look at what you did this day!"
+                android:text="@string/general_day_message"
                 android:textSize="25sp" />
 
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="20dp"
                 android:background="@color/light_gray"
-                android:padding="10dp"
-                android:layout_marginTop="20dp">
+                android:padding="10dp">
 
                 <ImageView
                     android:id="@+id/image_photo"
@@ -79,12 +78,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center_horizontal"
                     android:padding="5dp"
-                    android:text="This is a comment." />
+                    android:text="@string/this_is_a_comment" />
 
 
             </FrameLayout>
-
-
         </LinearLayout>
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

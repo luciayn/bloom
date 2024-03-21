@@ -18,7 +18,6 @@
         </activity>
         <activity android:name=".Register"></activity>
         <activity android:name=".Login"></activity>
-        <activity android:name=".ProfileFragment"></activity>
         <activity android:name=".BottomNavigation"></activity>
 
     </application>

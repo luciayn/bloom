@@ -21,7 +21,12 @@
     <string name="sign_in">Sign Up</string>
     <string name="bloom_cap">BLOOM</string>
     <string name="home">Home</string>
-    <string name="notification">Notification</string>
+    <string name="notification">Notifications</string>
     <string name="calendar">Calendar</string>
     <string name="profile">Profile</string>
+    <string name="random_date">Feb 13, 2024</string>
+    <string name="general_day_message">Look at what you did this day!</string>
+    <string name="this_is_a_comment">This is a comment.</string>
+    <string name="a_year_ago_today">A year ago today...</string>
+    <string name="entry_example">Today we went to visit the London bridge it was so beautiful. We also saw...</string>
 </resources>
