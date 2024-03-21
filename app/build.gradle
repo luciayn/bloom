@@ -4,10 +4,10 @@ plugins {
 
 android {
     compileSdk 34
-    namespace 'es.uc3m.android.navigation'
+    namespace 'es.uc3m.android.bloom'
 
     defaultConfig {
-        applicationId "es.uc3m.android.navigation"
+        applicationId "es.uc3m.android.bloom"
         minSdk 24
         targetSdk 34
         versionCode 1
@@ -39,6 +39,10 @@ dependencies {
 }
 apply plugin: 'com.google.gms.google-services'
 dependencies {
-    // Firebase Analytics
-    implementation 'com.google.firebase:firebase-analytics:20.0.2'
+
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.firebase:firebase-auth:22.3.1'
+    implementation 'com.google.firebase:firebase-analytics:21.5.1'
+    implementation 'com.google.firebase:firebase-database:20.3.1'
 }
+

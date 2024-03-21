@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "735926979592",
+    "firebase_url": "https://bloom-73629-default-rtdb.firebaseio.com",
+    "project_id": "bloom-73629",
+    "storage_bucket": "bloom-73629.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735926979592:android:52efbce2630f28995955bd",
+        "android_client_info": {
+          "package_name": "es.uc3m.android.bloom"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAp69aeJr3Zt4oPvKtLEzyf1o_ohBShoV8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
