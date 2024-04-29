@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity
         register = findViewById(R.id.init_register);
         login.setOnClickListener(this);
         register.setOnClickListener(this);
+
     }
 
 
@@ -37,4 +38,5 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+
 }

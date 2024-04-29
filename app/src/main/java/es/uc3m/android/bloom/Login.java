@@ -1,7 +1,10 @@
 package es.uc3m.android.bloom;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class Login extends AppCompatActivity implements View.OnClickListener {
+public class Login extends AppCompatActivity implements View.OnClickListener, View.OnHoverListener {
 
     EditText user, password;
     TextView signin;
@@ -29,6 +32,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         login.setOnClickListener(this);
         signin = findViewById(R.id.signInText);
         signin.setOnClickListener(this);
+        signin.setOnHoverListener(this);
+        user.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+        password.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
 
 
     }
@@ -48,14 +54,19 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     private void login() {
         String email = user.getText().toString().trim();
-        String password = this.password.getText().toString().trim();
+        String passwordStr = password.getText().toString().trim();
+        user.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+        password.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
 
-        if (email.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || passwordStr.isEmpty()) {
             Toast.makeText(Login.this, "Please enter both email and password.", Toast.LENGTH_LONG).show();
+            user.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            password.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+
             return;
         }
 
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, passwordStr)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -64,6 +75,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             startActivity(intent);
                         }
                     } else {
+                        user.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+                        password.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+
 
                         Toast.makeText(Login.this, "Authentication failed: " + task.getException().getMessage(),
                                 Toast.LENGTH_SHORT).show();
@@ -77,4 +91,16 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     }
 
 
+    @Override
+    public boolean onHover(View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_HOVER_ENTER:
+                signin.setTextColor(getResources().getColor(R.color.light_gray));
+                break;
+            case MotionEvent.ACTION_HOVER_EXIT:
+                signin.setTextColor(getResources().getColor(R.color.purple));
+                break;
+        }
+        return true;
+    }
 }

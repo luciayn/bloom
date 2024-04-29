@@ -4,8 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
+    Button newEntry;
 
     @Nullable
     @Override
@@ -33,6 +33,8 @@ public class HomeFragment extends Fragment {
         textViewDate.setText(formattedDate);
 
         addContentView(rootView);
+        newEntry = rootView.findViewById(R.id.new_entry);
+        newEntry.setOnClickListener(this);
 
         return rootView;
     }
@@ -55,5 +57,15 @@ public class HomeFragment extends Fragment {
 //        layoutParamsComment.setMargins(0, 0, 0, 0);
 //        textViewComment.setLayoutParams(layoutParamsComment);
 //        constraintLayout.addView(textViewComment);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.new_entry) {
+            Fragment newEntryFragment = new NewEntryFragment();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.nav_fragment, newEntryFragment)
+                    .commit();
+        }
     }
 }
