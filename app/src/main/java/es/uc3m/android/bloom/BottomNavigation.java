@@ -30,7 +30,9 @@ public class BottomNavigation extends AppCompatActivity implements BottomNavigat
         } else if (itemId == R.id.home_item) {
             fragment = new HomeFragment();
         } else {
-            fragment = new CalendarFragment();
+//            fragment = new CalendarFragment();
+            fragment = new ImageCalendarFragment();
+
         }
 
 

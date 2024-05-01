@@ -1,6 +1,8 @@
 package es.uc3m.android.bloom;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,12 +10,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -25,13 +23,17 @@ import java.util.Map;
 public class Register extends AppCompatActivity implements View.OnClickListener {
     EditText name, surname, user, pass, pass2, email;
     Button register;
-
     TextView login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_activity);
+        initializeFields();
+        setupListeners();
+    }
+
+    private void initializeFields() {
         name = findViewById(R.id.editTextNombre);
         surname = findViewById(R.id.editTextApellidos);
         user = findViewById(R.id.editTextUsu);
@@ -39,12 +41,12 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         pass2 = findViewById(R.id.editTextPassword2);
         email = findViewById(R.id.editTextEmail);
         register = findViewById(R.id.register);
-
-        register.setOnClickListener(this);
         login = findViewById(R.id.textViewLogIn);
+    }
 
+    private void setupListeners() {
+        register.setOnClickListener(this);
         login.setOnClickListener(this);
-
     }
 
     @Override
@@ -54,64 +56,86 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                 register();
                 break;
             case R.id.textViewLogIn:
-                Intent intent = new Intent(this, Login.class);
-                startActivity(intent);
+                startActivity(new Intent(this, Login.class));
                 break;
         }
-
-
     }
 
     private void register() {
+        if (!validateFields()) {
+            return;
+        }
+
         String emailStr = email.getText().toString().trim();
         String passwordStr = pass.getText().toString().trim();
-        String password2Str = pass2.getText().toString().trim();
-        String nameStr = name.getText().toString().trim();
-        String surnameStr = surname.getText().toString().trim();
-        String userStr = user.getText().toString().trim();
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(emailStr, passwordStr)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        onAuthSuccess(task.getResult().getUser());
+                    } else {
+                        Toast.makeText(Register.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
-        if (emailStr.isEmpty() || passwordStr.isEmpty() || password2Str.isEmpty() || nameStr.isEmpty() || surnameStr.isEmpty() || userStr.isEmpty()) {
-            Toast.makeText(Register.this, "All the fields must be informed", Toast.LENGTH_SHORT).show();
-        } else if (!passwordStr.equals(password2Str)) {
-            Toast.makeText(Register.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-        } else {
-            FirebaseAuth.getInstance().createUserWithEmailAndPassword(emailStr, passwordStr)
-                    .addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                                if (firebaseUser != null) {
-                                    String userId = firebaseUser.getUid();
+    private boolean validateFields() {
+        boolean valid = true;
+        resetFieldTints(); // Reset tints before validation
 
-                                    Map<String, Object> user = new HashMap<>();
-                                    user.put("name", nameStr);
-                                    user.put("surname", surnameStr);
-                                    user.put("username", userStr);
-
-                                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                                    databaseReference.child("Users").child(userId).setValue(user)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        Intent intent = new Intent(Register.this, HomeFragment.class);
-                                                        startActivity(intent);
-                                                    } else {
-
-                                                        Toast.makeText(getApplicationContext(), "Failed to save user information.", Toast.LENGTH_LONG).show();
-                                                    }
-                                                }
-                                            });
-
-                                }
-                            } else {
-                                Toast.makeText(Register.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+        if (isEmptyField(email)) {
+            email.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            Toast.makeText(this, "Email field cannot be empty.", Toast.LENGTH_SHORT).show();
+            valid = false;
         }
+        if (isEmptyField(pass) || isEmptyField(pass2)) {
+            pass.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            pass2.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            Toast.makeText(this, "Password fields cannot be empty.", Toast.LENGTH_SHORT).show();
+            valid = false;
+        }
+        if (!pass.getText().toString().trim().equals(pass2.getText().toString().trim())) {
+            pass.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            pass2.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            Toast.makeText(this, "Passwords do not match.", Toast.LENGTH_SHORT).show();
+            valid = false;
+        }
+        if (pass.getText().toString().trim().length() < 6) {
+            pass.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            Toast.makeText(this, "Password must be at least 6 characters long.", Toast.LENGTH_SHORT).show();
+            valid = false;
+        }
+        return valid;
     }
 
 
+    private void resetFieldTints() {
+        email.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+        pass.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+        pass2.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+        name.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+        surname.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+        user.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+    }
+
+    private boolean isEmptyField(EditText editText) {
+        return editText.getText().toString().trim().isEmpty();
+    }
+
+    private void onAuthSuccess(FirebaseUser firebaseUser) {
+        String userId = firebaseUser.getUid();
+        Map<String, Object> user = new HashMap<>();
+        user.put("name", name.getText().toString().trim());
+        user.put("surname", surname.getText().toString().trim());
+        user.put("username", this.user.getText().toString().trim());
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("Users").child(userId).setValue(user)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        startActivity(new Intent(Register.this, HomeFragment.class));
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Failed to save user information.", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
 }

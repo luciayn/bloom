@@ -29,4 +29,6 @@
     <string name="this_is_a_comment">This is a comment.</string>
     <string name="a_year_ago_today">A year ago today...</string>
     <string name="entry_example">Today we went to visit the London bridge it was so beautiful. We also saw...</string>
+    <string name="edit"><u>Edit</u></string>
+    <string name="done"><u>Done</u></string>
 </resources>
