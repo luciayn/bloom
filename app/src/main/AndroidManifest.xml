@@ -25,7 +25,8 @@
         <receiver android:name=".NotificationReceiver" />
         <activity android:name=".Notifications"></activity>
         <activity android:name=".NotificationHelper"></activity>
-        <activity android:name=".NotificationDetails">
+        <activity android:name=".NotificationDetails"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
