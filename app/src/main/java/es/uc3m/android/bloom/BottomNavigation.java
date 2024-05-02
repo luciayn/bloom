@@ -2,6 +2,7 @@ package es.uc3m.android.bloom;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -26,7 +27,8 @@ public class BottomNavigation extends AppCompatActivity implements BottomNavigat
         if (itemId == R.id.profile_item) {
             fragment = new ProfileFragment();
         } else if (itemId == R.id.notification_item) {
-            fragment = new NotificationsFragment();
+            startActivity(new Intent(this, NotificationDetails.class));
+            return true;
         } else if (itemId == R.id.home_item) {
             fragment = new HomeFragment();
         } else {
@@ -34,7 +36,6 @@ public class BottomNavigation extends AppCompatActivity implements BottomNavigat
             fragment = new ImageCalendarFragment();
 
         }
-
 
 
         getSupportFragmentManager().beginTransaction()
