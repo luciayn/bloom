@@ -68,6 +68,10 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
     String firebaseImage = "";
     String entryDate;
 
+    FirebaseStorage storage;
+
+    StorageReference storageRef;
+
     public static NewEntryFragment newInstance(String entryDate) {
         NewEntryFragment fragment = new NewEntryFragment();
         Bundle args = new Bundle();
@@ -107,11 +111,11 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
             date.setText(formattedDate);
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            String currentDate = sdf.format(new Date());
+            entryDate = sdf.format(new Date());
             userEntriesRef = database.getReference("Users")
                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                     .child("entries")
-                    .child(currentDate);
+                    .child(entryDate);
         }
 
 
@@ -127,8 +131,8 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                     fav = dataSnapshot.child("is_favorite").getValue(Boolean.class);
                     journal.setText(entryText);
                     favourite.setImageResource(fav ? R.drawable.marcador_marcado : R.drawable.marcador);
-                    FirebaseStorage storage = FirebaseStorage.getInstance();
-                    StorageReference storageRef = storage.getReferenceFromUrl(dataSnapshot.child("imageURL").getValue(String.class));
+                    storage = FirebaseStorage.getInstance();
+                    storageRef = storage.getReferenceFromUrl(dataSnapshot.child("imageURL").getValue(String.class));
 
                     storageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(getContext())
                             .load(uri.toString())
@@ -138,6 +142,7 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                         dayPicture.setImageResource(R.drawable.bell);
                     });
                     dayPicture.setVisibility(View.VISIBLE);
+
                 }
             }
 
@@ -196,10 +201,27 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
             entryData.put("imageURL", firebaseImage);
         }
 
-        userEntriesRef.setValue(entryData)
-                .addOnSuccessListener(aVoid -> navigateHome())
-                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to save entry: " + e.getMessage(), Toast.LENGTH_LONG).show());
+        userEntriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    userEntriesRef.updateChildren(entryData)
+                            .addOnSuccessListener(aVoid -> navigateHome())
+                            .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to update entry: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                } else {
+                    userEntriesRef.setValue(entryData)
+                            .addOnSuccessListener(aVoid -> navigateHome())
+                            .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to create entry: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
+
 
     private void navigateHome() {
         Fragment imageCalendarFragment = new ImageCalendarFragment();

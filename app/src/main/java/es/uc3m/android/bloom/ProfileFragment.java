@@ -17,20 +17,23 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.bumptech.glide.Glide;
 
 public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
-
     private FirebaseUser currentUser;
 
-    TextView name, surname, birthdate, edit;
-    ProgressBar progressBar;
+    private TextView name, surname, birthdate, edit;
+    private ShapeableImageView profilePic; // Add this for the profile image
+    private ProgressBar progressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.profile_fragment, container, false);
 
         name = view.findViewById(R.id.name_text);
@@ -38,6 +41,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         birthdate = view.findViewById(R.id.birth_date);
         edit = view.findViewById(R.id.edit_link);
         progressBar = view.findViewById(R.id.progress_bar);
+        profilePic = view.findViewById(R.id.logo); // Ensure this ID matches your layout
         edit.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -48,6 +52,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         if (currentUser != null) {
             String userId = currentUser.getUid();
             databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(userId);
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference("profile/" + userId + ".jpg");
+
+            storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                Glide.with(getContext())
+                        .load(uri.toString())
+                        .into(profilePic);
+            }).addOnFailureListener(exception -> {
+                // Handle any errors, such as no profile picture found
+            });
 
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
