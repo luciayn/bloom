@@ -175,7 +175,9 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                                 startActivityForResult(camera_intent, pic_id);
                             })
                             .setNegativeButton("Upload from Galery", (dialog, which) -> {
-                                dialog.dismiss();
+                                Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                galleryIntent.setType("image/*");
+                                startActivityForResult(galleryIntent, gallery_id);
                             })
                             .show();
                 }
@@ -220,9 +222,9 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
+        String imageName;
         if (requestCode == pic_id && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            String imageName;
             if (entryDate != null) {
                 imageName = "photos/" + entryDate + ".jpg";
 
@@ -278,21 +280,21 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                 });
             });
 
+
         } else if (requestCode == gallery_id && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
 
-            String imageName;
+            String imageName2;
             if (entryDate != null) {
-                imageName = "photos/" + entryDate + ".jpg";
+                imageName2 = entryDate + ".jpg";
 
             } else {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 String currentDate = sdf.format(new Date());
-                imageName = "photos/" + currentDate + ".jpg";
+                imageName2 = currentDate + ".jpg";
             }
-
             // Create a reference to 'photos/' + fileName
-            StorageReference imageRef = storageRef.child("photos/" + imageName);
+            StorageReference imageRef = storageRef.child("photos/" + imageName2);
 
             // Upload the file to Firebase Storage
             UploadTask uploadTask = imageRef.putFile(selectedImage);
@@ -337,5 +339,6 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                 });
             });
         }
+
     }
 }
