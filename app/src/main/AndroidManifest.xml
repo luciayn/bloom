@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.SET_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -22,16 +24,12 @@
         <activity android:name=".Register"></activity>
         <activity android:name=".Login"></activity>
         <activity android:name=".BottomNavigation"></activity>
-        <receiver android:name=".NotificationReceiver" />
-        <activity android:name=".Notifications"></activity>
-        <activity android:name=".NotificationHelper"></activity>
-        <activity android:name=".NotificationDetails"
+        <receiver android:name=".BottomNavigation$DailyNotificationReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </activity>
+        </receiver>
 
     </application>
 
