@@ -28,7 +28,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
 
-    private TextView name, surname, birthdate, edit;
+    private TextView name, surname, birthdate, edit, favs;
     private ShapeableImageView profilePic; // Add this for the profile image
     private ProgressBar progressBar;
 
@@ -41,7 +41,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         birthdate = view.findViewById(R.id.birth_date);
         edit = view.findViewById(R.id.edit_link);
         progressBar = view.findViewById(R.id.progress_bar);
-        profilePic = view.findViewById(R.id.logo); // Ensure this ID matches your layout
+        profilePic = view.findViewById(R.id.logo);
+        favs = view.findViewById(R.id.favourites_link);
+        favs.setOnClickListener(this);
         edit.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -96,6 +98,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             Fragment editProfileFragment = new EditProfileFragment();
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.nav_fragment, editProfileFragment)
+                    .commit();
+        }else{
+            Fragment favouritesFragment = new FavouritesFragment();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.nav_fragment, favouritesFragment)
                     .commit();
         }
     }
