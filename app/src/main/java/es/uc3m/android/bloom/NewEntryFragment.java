@@ -4,7 +4,9 @@ import static android.app.Activity.RESULT_OK;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.SpannableString;
@@ -20,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -51,6 +55,7 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_DATE = "entry_date";
 
     private static final int pic_id = 123;
+    private static final int gallery_id = 456;
 
     private FirebaseDatabase database;
     private DatabaseReference userEntriesRef;
@@ -146,24 +151,24 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.btn_camera:
-                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    // Permission is not granted
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
-                } else {
-                    // Permission has already been granted
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("Choose an Action")
-                            .setMessage("Please select an option:")
-                            .setPositiveButton("Open Camera", (dialog, which) -> {
-                                // Open the camera
-                                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                startActivityForResult(camera_intent, pic_id);
-                            })
-                            .setNegativeButton("Upload from Galery", (dialog, which) -> {
-                                dialog.dismiss();
-                            })
-                            .show();
-                }
+//                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+//                    // Permission is not granted
+//                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+//                } else {
+//                    // Permission has already been granted
+//                    new AlertDialog.Builder(getContext())
+//                            .setTitle("Choose an Action")
+//                            .setMessage("Please select an option:")
+//                            .setPositiveButton("Open Camera", (dialog, which) -> {
+//                                // Open the camera
+//                                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                                startActivityForResult(camera_intent, pic_id);
+//                            })
+//                            .setNegativeButton("Upload from Galery", (dialog, which) -> {
+//                                dialog.dismiss();
+//                            })
+//                            .show();
+//                }
 
                 new AlertDialog.Builder(getContext())
                         .setTitle("Choose an Action")
@@ -174,8 +179,9 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                             startActivityForResult(camera_intent, pic_id);
                         })
                         .setNegativeButton("Upload from Galery", (dialog, which) -> {
-
-                            dialog.dismiss();
+                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            galleryIntent.setType("image/*");
+                            startActivityForResult(galleryIntent, gallery_id);
                         })
                         .show();
 
@@ -216,11 +222,11 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
     //Method to save the image in tha database
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
         if (requestCode == pic_id && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference();
 
             StorageReference imageRef = storageRef.child("photos/mypicture.jpg");
 
@@ -269,6 +275,59 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                 });
             });
 
+        } else if (requestCode == gallery_id && resultCode == RESULT_OK) {
+            Uri selectedImage = data.getData();
+
+            // Get current date to include in the file name
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault());
+            Date now = new Date();
+            String fileName = formatter.format(now) + ".jpg";
+
+            // Create a reference to 'photos/' + fileName
+            StorageReference imageRef = storageRef.child("photos/" + fileName);
+
+            // Upload the file to Firebase Storage
+            UploadTask uploadTask = imageRef.putFile(selectedImage);
+
+            uploadTask.addOnFailureListener(exception -> {
+                // Handle unsuccessful uploads here
+            }).addOnSuccessListener(taskSnapshot -> {
+                // Here we use the reference to build the gs:// URL directly
+                StorageReference ref = taskSnapshot.getMetadata().getReference();
+                String gsUrl = String.format("gs://%s/%s", ref.getBucket(), ref.getPath());
+
+                // Correct the path by removing the first "/o/" which is part of the API structure
+                gsUrl = gsUrl.replace("/o/", "/");
+
+                // Assuming 'dayPicture' is your ImageView and you want to load the image
+                // Note: Glide does not natively support gs:// URLs, you would need to use the FirebaseImageLoader or download the image yourself
+                // Here's how you would typically set it for demonstration:
+                firebaseImage = gsUrl;
+
+                // If you want to display the image using Glide, you would first download the image using Firebase Storage APIs
+                File localFile = null;
+                try {
+                    localFile = File.createTempFile("images", "jpg");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                File finalLocalFile = localFile;
+                ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        // Local temp file has been created
+                        Glide.with(getContext())
+                                .load(finalLocalFile)
+                                .into(dayPicture);
+                        dayPicture.setVisibility(View.VISIBLE);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+            });
         }
     }
 }
