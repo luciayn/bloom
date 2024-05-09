@@ -24,7 +24,14 @@
         <activity android:name=".Register"></activity>
         <activity android:name=".Login"></activity>
         <activity android:name=".BottomNavigation"></activity>
-        <receiver android:name=".BottomNavigation$DailyNotificationReceiver"
+        <receiver android:name=".BottomNavigation$DailyReminderReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".BottomNavigation$PastDayReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

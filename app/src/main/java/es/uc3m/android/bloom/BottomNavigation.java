@@ -25,12 +25,15 @@ import java.util.Calendar;
 
 public class BottomNavigation extends AppCompatActivity implements BottomNavigationView.OnItemSelectedListener {
 
-    private static final String CHANNEL_ID = "es.uc3m.android.notifications.notify";
-    private static final String CHANNEL_NAME = "My notification channel";
-
-    private static final int NOTIFICATION_ID = 2;
+    private static final String CHANNEL_ID_1 = "es.uc3m.android.notifications.notify";
+    private static final String CHANNEL_NAME_1 = "My notification channel 1";
+    private static final String CHANNEL_ID_2 = "es.uc3m.android.notifications.notify";
+    private static final String CHANNEL_NAME_2 = "My notification channel 2";
+    private static final int NOTIFICATION_ID_1 = 1;
+    private static final int NOTIFICATION_ID_2 = 2;
     private NotificationManager notificationManager;
-    private PendingIntent pendingIntent;
+    private PendingIntent pendingIntentPD;
+    private PendingIntent pendingIntentDR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,41 +42,33 @@ public class BottomNavigation extends AppCompatActivity implements BottomNavigat
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_view);
         bottomNavigationView.setOnItemSelectedListener(this);
 
-        // Schedule the daily notification at 22:00:00
-        scheduleDailyNotification(this);
-    }
-
-    private void displayNotificationContent(String title, String text) {
-        TextView notificationTitleTextView = findViewById(R.id.notificationTitleTextView);
-        TextView notificationTextTextView = findViewById(R.id.notificationTextTextView);
-
-        notificationTitleTextView.setText(title);
-        notificationTextTextView.setText(text);
+        // Schedule past day's content
+        schedulePastDay(this);
+        // Schedule the daily reminder at 22:00:00
+        scheduleDailyReminder(this);
     }
 
     private static PendingIntent getPendingIntent(Context context) {
         Intent intent = new Intent(context, BottomNavigation.class);
-        intent.putExtra("notificationTitle", "Heads-up notification");
-        intent.putExtra("notificationText", "This is a heads-up notification");
         intent.setAction(Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private void scheduleDailyNotification(Context context) {
-        Intent intent = new Intent(context, DailyNotificationReceiver.class);
+    private void scheduleDailyReminder(Context context) {
+        Intent intent = new Intent(context, DailyReminderReceiver.class);
         intent.putExtra("notificationTitle", "Bloom");
         intent.putExtra("notificationText", "Remember to record today's day!");
-        pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingIntentDR = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Set up alarm manager to trigger at 22:00 every day
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.HOUR_OF_DAY, 18);
-            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.HOUR_OF_DAY, 19);
+            calendar.set(Calendar.MINUTE, 30);
             calendar.set(Calendar.SECOND, 0);
 
             // If the time has already passed, schedule for the next day
@@ -81,16 +76,43 @@ public class BottomNavigation extends AppCompatActivity implements BottomNavigat
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
             }
 
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentDR);
             //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-            //        alarmManager.INTERVAL_DAY, pendingIntent);
+            //        alarmManager.INTERVAL_DAY, pendingIntentDR);
         }
     }
+
+    private void schedulePastDay(Context context) {
+        Intent intent = new Intent(context, PastDayReceiver.class);
+        intent.putExtra("notificationTitle", "Bloom");
+        intent.putExtra("notificationText", "See what you did this day last year!");
+        pendingIntentPD = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Set up alarm manager to trigger at 22:00 every day
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.set(Calendar.HOUR_OF_DAY, 19);
+            calendar.set(Calendar.MINUTE, 31);
+            calendar.set(Calendar.SECOND, 0);
+
+            // If the time has already passed, schedule for the next day
+            if (Calendar.getInstance().after(calendar)) {
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+            }
+
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentPD);
+            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+            //        alarmManager.INTERVAL_DAY, pendingIntentPD);
+        }
+    }
+
     private static NotificationManager getNotificationManager(Context context) {
         return (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
     }
 
-    public static class DailyNotificationReceiver extends BroadcastReceiver {
+    public static class DailyReminderReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Extract notification content from the intent extras
@@ -106,7 +128,7 @@ public class BottomNavigation extends AppCompatActivity implements BottomNavigat
             NotificationManager notificationManager = getNotificationManager(context);
 
             // Configure notification using builder
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID_2);
             builder.setContentTitle(title);
             builder.setContentText(text);
             builder.setSmallIcon(R.drawable.baseline_dangerous_24);
@@ -117,13 +139,51 @@ public class BottomNavigation extends AppCompatActivity implements BottomNavigat
 
             // Create a notification channel for devices running Android Oreo and higher
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME,
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID_2, CHANNEL_NAME_2,
                         NotificationManager.IMPORTANCE_HIGH);
                 notificationManager.createNotificationChannel(channel);
             }
 
             // Show the notification
-            notificationManager.notify(NOTIFICATION_ID, builder.build());
+            notificationManager.notify(NOTIFICATION_ID_2, builder.build());
+
+        }
+    }
+
+    public static class PastDayReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Extract notification content from the intent extras
+            String title = intent.getStringExtra("notificationTitle");
+            String text = intent.getStringExtra("notificationText");
+
+            Intent notificationIntent = new Intent(context, BottomNavigation.class);
+            notificationIntent.putExtra("notificationTitle", title);
+            notificationIntent.putExtra("notificationText", text);
+            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // Important for starting activity from BroadcastReceiver
+            context.startActivity(notificationIntent);
+
+            NotificationManager notificationManager = getNotificationManager(context);
+
+            // Configure notification using builder
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID_1);
+            builder.setContentTitle(title);
+            builder.setContentText(text);
+            builder.setSmallIcon(R.drawable.baseline_dangerous_24);
+            builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+            builder.setFullScreenIntent(null, true); // heads-up
+            builder.addAction(R.drawable.baseline_access_time_24, "Start action",
+                    getPendingIntent(context)); // action
+
+            // Create a notification channel for devices running Android Oreo and higher
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID_1, CHANNEL_NAME_1,
+                        NotificationManager.IMPORTANCE_HIGH);
+                notificationManager.createNotificationChannel(channel);
+            }
+
+            // Show the notification
+            notificationManager.notify(NOTIFICATION_ID_1, builder.build());
 
         }
     }
