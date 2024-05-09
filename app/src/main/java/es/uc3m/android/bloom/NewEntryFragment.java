@@ -9,10 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -48,12 +45,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
+
+import android.Manifest;
 
 public class NewEntryFragment extends Fragment implements View.OnClickListener {
 
     private static final String ARG_DATE = "entry_date";
-
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
     private static final int pic_id = 123;
     private static final int gallery_id = 456;
 
@@ -68,6 +66,7 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
     Boolean fav = Boolean.FALSE;
 
     String firebaseImage = "";
+    String entryDate;
 
     public static NewEntryFragment newInstance(String entryDate) {
         NewEntryFragment fragment = new NewEntryFragment();
@@ -96,7 +95,7 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
 
 
         if (getArguments() != null) {
-            String entryDate = getArguments().getString(ARG_DATE);
+            entryDate = getArguments().getString(ARG_DATE);
             userEntriesRef = database.getReference("Users")
                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                     .child("entries")
@@ -128,6 +127,17 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                     fav = dataSnapshot.child("is_favorite").getValue(Boolean.class);
                     journal.setText(entryText);
                     favourite.setImageResource(fav ? R.drawable.marcador_marcado : R.drawable.marcador);
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReferenceFromUrl(dataSnapshot.child("imageURL").getValue(String.class));
+
+                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(getContext())
+                            .load(uri.toString())
+                            .error(R.drawable.no_image)
+                            .into(dayPicture)).addOnFailureListener(e -> {
+
+                        dayPicture.setImageResource(R.drawable.bell);
+                    });
+                    dayPicture.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -151,39 +161,24 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.btn_camera:
-//                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-//                    // Permission is not granted
-//                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
-//                } else {
-//                    // Permission has already been granted
-//                    new AlertDialog.Builder(getContext())
-//                            .setTitle("Choose an Action")
-//                            .setMessage("Please select an option:")
-//                            .setPositiveButton("Open Camera", (dialog, which) -> {
-//                                // Open the camera
-//                                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                                startActivityForResult(camera_intent, pic_id);
-//                            })
-//                            .setNegativeButton("Upload from Galery", (dialog, which) -> {
-//                                dialog.dismiss();
-//                            })
-//                            .show();
-//                }
-
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Choose an Action")
-                        .setMessage("Please select an option:")
-                        .setPositiveButton("Open Camera", (dialog, which) -> {
-                            // Open the camera
-                            Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(camera_intent, pic_id);
-                        })
-                        .setNegativeButton("Upload from Galery", (dialog, which) -> {
-                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            galleryIntent.setType("image/*");
-                            startActivityForResult(galleryIntent, gallery_id);
-                        })
-                        .show();
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    // Permission is not granted
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+                } else {
+                    // Permission has already been granted
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Choose an Action")
+                            .setMessage("Please select an option:")
+                            .setPositiveButton("Open Camera", (dialog, which) -> {
+                                // Open the camera
+                                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                startActivityForResult(camera_intent, pic_id);
+                            })
+                            .setNegativeButton("Upload from Galery", (dialog, which) -> {
+                                dialog.dismiss();
+                            })
+                            .show();
+                }
 
                 break;
 
@@ -227,8 +222,16 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
 
         if (requestCode == pic_id && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
+            String imageName;
+            if (entryDate != null) {
+                imageName = "photos/" + entryDate + ".jpg";
 
-            StorageReference imageRef = storageRef.child("photos/mypicture.jpg");
+            } else {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                String currentDate = sdf.format(new Date());
+                imageName = "photos/" + currentDate + ".jpg";
+            }
+            StorageReference imageRef = storageRef.child(imageName);
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
@@ -278,13 +281,18 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
         } else if (requestCode == gallery_id && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
 
-            // Get current date to include in the file name
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault());
-            Date now = new Date();
-            String fileName = formatter.format(now) + ".jpg";
+            String imageName;
+            if (entryDate != null) {
+                imageName = "photos/" + entryDate + ".jpg";
+
+            } else {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                String currentDate = sdf.format(new Date());
+                imageName = "photos/" + currentDate + ".jpg";
+            }
 
             // Create a reference to 'photos/' + fileName
-            StorageReference imageRef = storageRef.child("photos/" + fileName);
+            StorageReference imageRef = storageRef.child("photos/" + imageName);
 
             // Upload the file to Firebase Storage
             UploadTask uploadTask = imageRef.putFile(selectedImage);

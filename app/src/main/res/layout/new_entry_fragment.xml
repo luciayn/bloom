@@ -48,7 +48,7 @@
     <ImageView
         android:id="@+id/day_image"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:layout_below="@id/ll_header"
         android:scaleType="fitCenter"
         android:visibility="gone" /> <!-- Initially hidden -->
