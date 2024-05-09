@@ -1,6 +1,7 @@
 package es.uc3m.android.bloom;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class FavouritesFragment extends Fragment {
@@ -54,7 +56,6 @@ public class FavouritesFragment extends Fragment {
                 }
             }
 
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("Database error: " + databaseError.getMessage());
@@ -63,7 +64,7 @@ public class FavouritesFragment extends Fragment {
     }
 
     private void addFavoriteToLayout(String name, String surname, String text, String imageUrl) {
-        View layout = getLayoutInflater().inflate(R.layout.favourite_item, null); // Assume favorite_item.xml is your item layout
+        View layout = getLayoutInflater().inflate(R.layout.favourite_item, null);
 
         TextView nameView = layout.findViewById(R.id.textView6);
         TextView textView = layout.findViewById(R.id.textView7);
@@ -71,7 +72,25 @@ public class FavouritesFragment extends Fragment {
 
         nameView.setText(name + " " + surname);
         textView.setText(text);
-        Picasso.get().load(imageUrl).into(imageView);
+
+        if (isAdded() && getActivity() != null) {
+            Picasso.get()
+                    .load(imageUrl)
+                    .error(R.drawable.no_image) // Assuming you have a default error image in your resources
+                    .into(imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            // Image successfully loaded
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e("Picasso", "Error loading image: " + imageUrl, e);
+                        }
+                    });
+        } else {
+            Log.e("FavouritesFragment", "Fragment not attached when trying to load image.");
+        }
 
         favoritesContainer.addView(layout);
     }

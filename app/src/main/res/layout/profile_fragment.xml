@@ -56,20 +56,21 @@
                 android:text="@string/edit"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/purple" />
-            <TextView
-                android:id="@+id/favourites_link"
-                android:layout_width="match_parent"
-                android:layout_height="17dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="end"
-                android:paddingEnd="16dp"
-                android:text="Favs"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/purple"
-                android:layout_below="@id/edit_link"/>
+
+<!--            <TextView-->
+<!--                android:id="@+id/favourites_link"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="16dp"-->
+<!--                android:layout_below="@id/edit_link"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:clickable="true"-->
+<!--                android:focusable="true"-->
+<!--                android:gravity="end"-->
+<!--                android:paddingEnd="16dp"-->
+<!--                android:text="Favs"-->
+<!--                android:textAlignment="viewEnd"-->
+<!--                android:textColor="@color/purple" />-->
 
 
         </LinearLayout>

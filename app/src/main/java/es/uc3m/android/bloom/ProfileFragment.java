@@ -42,8 +42,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         edit = view.findViewById(R.id.edit_link);
         progressBar = view.findViewById(R.id.progress_bar);
         profilePic = view.findViewById(R.id.logo);
-        favs = view.findViewById(R.id.favourites_link);
-        favs.setOnClickListener(this);
+//        favs = view.findViewById(R.id.favourites_link);
+//        favs.setOnClickListener(this);
         edit.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
