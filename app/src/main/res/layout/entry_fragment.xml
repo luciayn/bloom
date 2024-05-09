@@ -44,12 +44,19 @@
             android:textColor="@color/purple" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/day_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/ll_header"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
     <!-- ScrollView for content that can scroll -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/ll_header"
+        android:layout_below="@id/day_image"
         android:fillViewport="true">
 
         <!-- Diary entry EditText -->

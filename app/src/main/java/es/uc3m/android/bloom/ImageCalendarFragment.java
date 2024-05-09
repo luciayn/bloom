@@ -61,7 +61,6 @@ public class ImageCalendarFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         int currentMonth = calendar.get(Calendar.MONTH);
         int currentYear = calendar.get(Calendar.YEAR);
-
         ArrayAdapter<Integer> yearAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item, getYears());
         yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -99,6 +98,7 @@ public class ImageCalendarFragment extends Fragment {
 
             }
         });
+        updateCalendar(currentMonth, currentYear);
 
         return view;
 

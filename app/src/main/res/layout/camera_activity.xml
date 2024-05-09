@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,17 +13,8 @@
         app:layout_constraintBottom_toTopOf="@+id/btnCaptureImage"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <VideoView
-        android:id="@+id/videoView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/btnCaptureVideo"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="NotSibling" />
 
     <LinearLayout
         android:id="@+id/buttonContainer"
@@ -41,21 +33,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Capture Image"
-            android:layout_margin="10dp"
-            android:layout_marginBottom="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:onClick="captureImage" />
+            android:onClick="captureImage"
+            android:layout_margin="10dp"/>
 
         <Button
-            android:id="@+id/btnCaptureVideo"
+            android:id="@+id/btnUploadImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Capture Video"
-            android:layout_margin="10dp"
-            android:layout_marginBottom="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:onClick="captureVideo" />
+            android:text="Upload Image"
+            android:onClick="uploadImage"
+            android:layout_margin="10dp"/>
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

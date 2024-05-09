@@ -6,11 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -18,6 +20,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class EntryFragment extends Fragment implements View.OnClickListener {
 
@@ -26,6 +30,7 @@ public class EntryFragment extends Fragment implements View.OnClickListener {
     ImageButton favourite;
     TextView dateTextView, edit, journal;
 
+    ImageView image;
     private FirebaseDatabase databaseReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
@@ -51,6 +56,7 @@ public class EntryFragment extends Fragment implements View.OnClickListener {
         favourite = view.findViewById(R.id.btn_favorite);
         edit = view.findViewById(R.id.edit_entry);
         journal = view.findViewById(R.id.et_diary_entry);
+        image = view.findViewById(R.id.day_image);
 
         favourite.setOnClickListener(this);
         edit.setOnClickListener(this);
@@ -72,6 +78,23 @@ public class EntryFragment extends Fragment implements View.OnClickListener {
                 if (dataSnapshot.hasChild("entry_text")) {
                     String entryText = dataSnapshot.child("entry_text").getValue(String.class);
                     fav = dataSnapshot.child("is_favorite").getValue(Boolean.class);
+                    if (dataSnapshot.child("imageURL").exists()) {
+
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        StorageReference storageRef = storage.getReferenceFromUrl(dataSnapshot.child("imageURL").getValue(String.class));
+
+                        storageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(getContext())
+                                .load(uri.toString())
+                                .error(R.drawable.no_image)
+                                .into(image)).addOnFailureListener(e -> {
+
+                            image.setImageResource(R.drawable.bell);
+                        });
+
+
+
+                        image.setVisibility(View.VISIBLE);
+                    }
                     if (fav) {
                         favourite.setImageResource(R.drawable.marcador_marcado);
                     } else {

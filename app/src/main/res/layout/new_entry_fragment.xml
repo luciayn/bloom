@@ -9,8 +9,8 @@
         android:id="@+id/ll_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <ImageButton
             android:id="@+id/btn_favorite"
@@ -18,7 +18,7 @@
             android:layout_height="44dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
-            android:src="@drawable/marcador" /> <!-- Replace with your favorite icon -->
+            android:src="@drawable/marcador" />
 
         <TextView
             android:id="@+id/tv_date"
@@ -41,16 +41,24 @@
             android:padding="8dp"
             android:text="@string/done"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/purple"
-            />
+            android:textColor="@color/purple" />
     </LinearLayout>
 
-    <!-- ScrollView for content that can scroll -->
+    <!-- ImageView positioned below header and above the EditText -->
+    <ImageView
+        android:id="@+id/day_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/ll_header"
+        android:scaleType="fitCenter"
+        android:visibility="gone" /> <!-- Initially hidden -->
+
+    <!-- ScrollView for content that can scroll, positioned below the ImageView -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/ll_header"
+        android:layout_below="@id/day_image"
         android:fillViewport="true">
 
         <!-- Diary entry EditText -->
@@ -65,7 +73,6 @@
             android:inputType="textMultiLine"
             android:minHeight="300dp"
             android:padding="8dp" />
-
     </ScrollView>
 
     <!-- Floating Action Button for the camera, fixed at the bottom right -->

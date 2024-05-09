@@ -1,104 +1,139 @@
 package es.uc3m.android.bloom;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.widget.ImageView;
-import android.widget.VideoView;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 
 public class CameraActivity extends AppCompatActivity {
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_VIDEO_CAPTURE = 2;
-    private Uri mediaUri;
+
+    private static final int PERMISSION_REQUEST_CODE = 100;
+
+    private static final int pic_id = 123;
+
+    private ActivityResultLauncher<Intent> takePictureLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_activity);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        // Initialize the launcher
+        takePictureLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        Bundle extras = data.getExtras();
+                        Bitmap imageBitmap = (Bitmap) extras.get("data");
+                        // Handle the captured image here, e.g., display it or save it
+                        // You can call uploadImageToFirebase here if you uncomment the function
+                    }
+                }
+        );
+
+        Button btnCaptureImage = findViewById(R.id.btnCaptureImage);
+        btnCaptureImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkPermissions(Manifest.permission.CAMERA)) {
+                    captureImage();
+                }
+            }
+        });
+
+        Button btnUploadImage = findViewById(R.id.btnUploadImage);
+        btnUploadImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    uploadImage();
+                }
+            }
+        });
+    }
+
+    private void captureImage() {
+        Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(camera_intent, pic_id);
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == pic_id && resultCode == RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+
+            StorageReference imageRef = storageRef.child("photos/mypicture.jpg");
+
+            // Get the data from an ImageView as bytes
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] imageData = baos.toByteArray();
+
+            // Create a UploadTask
+            UploadTask uploadTask = imageRef.putBytes(imageData);
+            uploadTask.addOnFailureListener(exception -> {
+                // Handle unsuccessful uploads
+            }).addOnSuccessListener(taskSnapshot -> {
+                // Handle successful uploads on complete
+                // For example, get the download URL
+                taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+                    // Do what you want with the download url
+                });
+            });
         }
     }
 
-    private File createMediaFile(boolean isImage) throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = (isImage ? "JPEG_" : "VIDEO_") + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File mediaFile = File.createTempFile(imageFileName, isImage ? ".jpg" : ".mp4", storageDir);
-        mediaUri = FileProvider.getUriForFile(this, "your.package.name.fileprovider", mediaFile);
-        return mediaFile;
+    public void uploadImage() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        takePictureLauncher.launch(intent);
     }
 
-    public void captureImage() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createMediaFile(true);
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
+    private boolean checkPermissions(String permission) {
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {permission}, PERMISSION_REQUEST_CODE);
+            return false;
         }
-    }
-
-    public void captureVideo() {
-        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
-            File videoFile = null;
-            try {
-                videoFile = createMediaFile(false);
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            if (videoFile != null) {
-                takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
-                startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
-            }
-        }
+        return true;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                // Media was captured as an image
-                // Optionally, you can directly use the mediaUri to display the image
-                displayMedia(mediaUri, true);
-            } else if (requestCode == REQUEST_VIDEO_CAPTURE) {
-                // Media was captured as a video
-                displayMedia(mediaUri, false);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            for (int i = 0; i < permissions.length; i++) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    if (permissions[i].equals(Manifest.permission.CAMERA)) {
+                        captureImage();
+                    } else if (permissions[i].equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        uploadImage();
+                    }
+                } else {
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
-
-    // Method to display the captured media
-    private void displayMedia(Uri mediaUri, boolean isImage) {
-        ImageView imageView = findViewById(R.id.imageView);
-        if (isImage) {
-            imageView.setImageURI(mediaUri);
-        } else {
-            // For video, use a VideoView or similar component to display
-            VideoView videoView = findViewById(R.id.videoView);
-            videoView.setVideoURI(mediaUri);
-            videoView.start();
-        }
-    }
 }
-

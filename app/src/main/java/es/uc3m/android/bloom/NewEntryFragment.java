@@ -1,6 +1,12 @@
 package es.uc3m.android.bloom;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
@@ -9,20 +15,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -30,13 +50,19 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
 
     private static final String ARG_DATE = "entry_date";
 
+    private static final int pic_id = 123;
+
     private FirebaseDatabase database;
     private DatabaseReference userEntriesRef;
+
+    ImageView dayPicture;
 
     EditText journal;
     ImageButton favourite, camera;
     TextView date, done;
     Boolean fav = Boolean.FALSE;
+
+    String firebaseImage = "";
 
     public static NewEntryFragment newInstance(String entryDate) {
         NewEntryFragment fragment = new NewEntryFragment();
@@ -54,6 +80,7 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
         favourite = view.findViewById(R.id.btn_favorite);
         camera = view.findViewById(R.id.btn_camera);
         done = view.findViewById(R.id.tv_done);
+        dayPicture = view.findViewById(R.id.day_image);
         date = view.findViewById(R.id.tv_date);
 
         favourite.setOnClickListener(this);
@@ -61,6 +88,7 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
         camera.setOnClickListener(this);
 
         database = FirebaseDatabase.getInstance();
+
 
         if (getArguments() != null) {
             String entryDate = getArguments().getString(ARG_DATE);
@@ -73,6 +101,13 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
             loadEntryData();
             String formattedDate = DateConverter.convertDate(entryDate);
             date.setText(formattedDate);
+        } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            String currentDate = sdf.format(new Date());
+            userEntriesRef = database.getReference("Users")
+                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .child("entries")
+                    .child(currentDate);
         }
 
 
@@ -111,8 +146,41 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.btn_camera:
-                // Add camera functionality here
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    // Permission is not granted
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+                } else {
+                    // Permission has already been granted
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Choose an Action")
+                            .setMessage("Please select an option:")
+                            .setPositiveButton("Open Camera", (dialog, which) -> {
+                                // Open the camera
+                                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                startActivityForResult(camera_intent, pic_id);
+                            })
+                            .setNegativeButton("Upload from Galery", (dialog, which) -> {
+                                dialog.dismiss();
+                            })
+                            .show();
+                }
+
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Choose an Action")
+                        .setMessage("Please select an option:")
+                        .setPositiveButton("Open Camera", (dialog, which) -> {
+                            // Open the camera
+                            Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            startActivityForResult(camera_intent, pic_id);
+                        })
+                        .setNegativeButton("Upload from Galery", (dialog, which) -> {
+
+                            dialog.dismiss();
+                        })
+                        .show();
+
                 break;
+
             case R.id.btn_favorite:
                 toggleFavorite();
                 break;
@@ -124,6 +192,9 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
         Map<String, Object> entryData = new HashMap<>();
         entryData.put("entry_text", entryText);
         entryData.put("is_favorite", fav);
+        if (!firebaseImage.isEmpty()) {
+            entryData.put("imageURL", firebaseImage);
+        }
 
         userEntriesRef.setValue(entryData)
                 .addOnSuccessListener(aVoid -> navigateHome())
@@ -140,5 +211,64 @@ public class NewEntryFragment extends Fragment implements View.OnClickListener {
     private void toggleFavorite() {
         fav = !fav;
         favourite.setImageResource(fav ? R.drawable.marcador_marcado : R.drawable.marcador);
+    }
+
+    //Method to save the image in tha database
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == pic_id && resultCode == RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+
+            StorageReference imageRef = storageRef.child("photos/mypicture.jpg");
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            byte[] imageData = byteArrayOutputStream.toByteArray();
+
+            UploadTask uploadTask = imageRef.putBytes(imageData);
+            uploadTask.addOnFailureListener(exception -> {
+                // Handle unsuccessful uploads here
+            }).addOnSuccessListener(taskSnapshot -> {
+                // Here we use the reference to build the gs:// URL directly
+                StorageReference ref = taskSnapshot.getMetadata().getReference();
+                String gsUrl = String.format("gs://%s/%s", ref.getBucket(), ref.getPath());
+
+                // Correct the path by removing the first "/o/" which is part of the API structure
+                gsUrl = gsUrl.replace("/o/", "/");
+
+                // Assuming 'dayPicture' is your ImageView and you want to load the image
+                // Note: Glide does not natively support gs:// URLs, you would need to use the FirebaseImageLoader or download the image yourself
+                // Here's how you would typically set it for demonstration:
+                firebaseImage = gsUrl;
+
+                // If you want to display the image using Glide, you would first download the image using Firebase Storage APIs
+                File localFile = null;
+                try {
+                    localFile = File.createTempFile("images", "jpg");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                File finalLocalFile = localFile;
+                ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        // Local temp file has been created
+                        Glide.with(getContext())
+                                .load(finalLocalFile)
+                                .into(dayPicture);
+                        dayPicture.setVisibility(View.VISIBLE);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+            });
+
+        }
     }
 }
